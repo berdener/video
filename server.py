@@ -261,20 +261,20 @@ def index():
     files_html = ''.join([f"<a href='/static/output/{f}' target='_blank'>{f}</a>" for f in files[::-1]])
     keys_hint = '' if (os.getenv('ELEVENLABS_API_KEY') and os.getenv('PEXELS_API_KEY')) else '<p class="warn">Uyarı: ELEVENLABS_API_KEY ve PEXELS_API_KEY tanımlı değil.</p>'
 
-    html = f"""<!doctype html>
+    html = """<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Video Creator</title>
 <style>
-body{{font-family:system-ui;max-width:860px;margin:40px auto;padding:0 16px}}
-.btn{{padding:12px 18px;border:0;border-radius:10px;background:#111;color:#fff;font-weight:600;cursor:pointer}}
-.btn[disabled]{{opacity:.5;cursor:not-allowed}}
-.card{{border:1px solid #eee;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 8px 30px rgba(0,0,0,.04)}}
-.log{{white-space:pre-wrap;background:#0a0a0a;color:#c7f5c4;border-radius:10px;padding:12px;font-size:13px;min-height:120px}}
-.files a{{display:block;margin:6px 0}}
-.warn{{color:#b65a00;font-weight:600}}
+body{font-family:system-ui;max-width:860px;margin:40px auto;padding:0 16px}
+.btn{padding:12px 18px;border:0;border-radius:10px;background:#111;color:#fff;font-weight:600;cursor:pointer}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.card{border:1px solid #eee;border-radius:14px;padding:18px;margin:12px 0;box-shadow:0 8px 30px rgba(0,0,0,.04)}
+.log{white-space:pre-wrap;background:#0a0a0a;color:#c7f5c4;border-radius:10px;padding:12px;font-size:13px;min-height:120px}
+.files a{display:block;margin:6px 0}
+.warn{color:#b65a00;font-weight:600}
 </style>
 </head>
 <body>
@@ -288,7 +288,7 @@ body{{font-family:system-ui;max-width:860px;margin:40px auto;padding:0 16px}}
     <li>ELEVENLABS_API_KEY (zorunlu)</li>
     <li>PEXELS_API_KEY (zorunlu)</li>
   </ul>
-  {keys_hint}
+""" + keys_hint + """
 </div>
 
 <div class="card">
@@ -299,7 +299,7 @@ body{{font-family:system-ui;max-width:860px;margin:40px auto;padding:0 16px}}
 
 <div class="card">
   <p><b>3) Çıktılar</b></p>
-  <div class="files" id="files">{files_html}</div>
+  <div class="files" id="files">""" + files_html + """</div>
 </div>
 
 <script>
