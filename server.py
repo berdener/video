@@ -37,13 +37,9 @@ def next_output_path():
         i += 1
 
 def _pick_font():
-    # Linux tabanlı Railway imajlarında genelde şu fontlar bulunur
-    candidates = [
-        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-        '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
-        '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
-        'C:\\Windows\\Fonts\\arial.ttf',  # Windows için
-    ]
+    # Artık TTF aramıyoruz; bitmap fonta düşeceğiz
+    return None
+
     for p in candidates:
         if os.path.exists(p):
             return p
@@ -168,29 +164,41 @@ def fetch_pexels_videos(count: int = 3, query: str | None = None):
 
 # ---------------------- Captions (PIL) ----------------------
 def text_to_caption_images(text: str, width: int = W):
-    font_path = _pick_font()
-    font = ImageFont.truetype(font_path, 54)
+    # TrueType fontu zorunlu kılmadan, Pillow'un yerleşik bitmap fontunu kullan
+    font = ImageFont.load_default()
 
-    parts = [p.strip() for p in text.split('\n') if p.strip()]
+    parts = [p.strip() for p in text.split("\n") if p.strip()]
     caption_images = []
-    for p in parts:
-        wrapped = textwrap.fill(p, width=28)
-        lines = wrapped.split('\n')
 
-        img = Image.new('RGBA', (width, 400), (0, 0, 0, 0))
-        overlay = Image.new('RGBA', img.size, (0, 0, 0, 110))
+    for p in parts:
+        # Bitmap font daha küçük olduğundan biraz daha geniş saralım
+        wrapped = textwrap.fill(p, width=34)
+        lines = wrapped.split("\n")
+
+        # Basit yükseklik hesabı (bitmap font için satır başına ~22px)
+        line_h = 22
+        padding_top = 40
+        padding_bottom = 40
+        line_gap = 6
+        height = padding_top + len(lines) * (line_h + line_gap) + padding_bottom
+
+        from PIL import Image, ImageDraw
+        img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        overlay = Image.new("RGBA", img.size, (0, 0, 0, 110))
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
 
-        y = 70
+        y = padding_top
         for line in lines:
-            w_line, h_line = draw.textsize(line, font=font)
-            x = (width - w_line) // 2
+            w, _ = draw.textsize(line, font=font)
+            x = (width - w) // 2
             draw.text((x, y), line, font=font, fill=(255, 255, 255, 255))
-            y += h_line + 8
+            y += line_h + line_gap
 
         caption_images.append(img)
+
     return caption_images
+
 
 # ---------------------- Assemble Video ----------------------
 def assemble_video(story_text, voice_path, bg_paths, music_path=None, out_path=None):
