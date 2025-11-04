@@ -69,7 +69,7 @@ def fetch_pexels_videos(count=3, query=None):
     for v in vids[:count]:
         files=sorted(v.get('video_files',[]), key=lambda x:x.get('height',0), reverse=True)
         if not files: continue
-        link=files[0]['link']; filename=TMP_DIR / f'bg_{v[\"id\"]}.mp4'
+        link=files[0]['link']; filename = TMP_DIR / f"bg_{v['id']}.mp4"
         with requests.get(link,stream=True,timeout=120) as s:
             s.raise_for_status()
             with open(filename,'wb') as f:
